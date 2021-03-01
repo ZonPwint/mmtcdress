@@ -1,10 +1,8 @@
 <?php
 
-use App\Http\Controllers\BackendController;
-use App\Http\Controllers\DressController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\UserController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +16,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
-Route::resource('/deshboard',BackendController::class);
-Route::resource('/dress',DressController::class);
-Route::resource('/order',OrderController::class);
-Route::resource('/user',UserController::class);
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->name('dashboard');
